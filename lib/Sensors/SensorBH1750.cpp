@@ -1,13 +1,13 @@
 #include "SensorBH1750.h"
 
-LightSensor::LightSensor(uint8_t addr) : sensor(addr) {}
+LightSensor::LightSensor(uint8_t addr) : _addr(addr), sensor(addr) {}
 
-bool LightSensor::begin()
+bool LightSensor::begin(TwoWire &wire)
 {
-    return sensor.begin() == BH1750_OK;
+    return sensor.begin(BH1750::CONTINUOUS_HIGH_RES_MODE, &wire);
 }
 
 float LightSensor::readLightLevel()
 {
-    return sensor.getAmbientLight();
+    return sensor.readLightLevel();
 }

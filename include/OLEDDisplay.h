@@ -9,5 +9,7 @@ public:
     void showData(float temp, float humidity, float pressure, float light);
 
 private:
-    U8G2_SSD1306_128X64_NONAME_F_HW_I2C display;
+    U8G2_SSD1306_128X64_NONAME_F_HW_I2C *display;
+    uint8_t sda;
+    uint8_t scl;
 };

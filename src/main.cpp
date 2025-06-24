@@ -15,27 +15,53 @@
 
 TempHumiditySensor aht20;
 PressureSensor bmp280;
-LightSensor bh1750;
+LightSensor bh1750; // 低电平使用默认地址 0x23，拉高使用0x5c
 OLEDDisplay oled(OLED_SDA, OLED_SCL);
+
+// 创建第二个I2C实例用于OLED
+TwoWire I2COLED = TwoWire(1);
 
 void setup()
 {
   Serial.begin(115200);
 
-  // 初始化传感器I2C总线
+  // 初始化传感器I2C总线 (Wire0)
   Wire.begin(SENSOR_SDA, SENSOR_SCL);
+
+  // 初始化OLED I2C总线 (Wire1)
+  I2COLED.begin(OLED_SDA, OLED_SCL);
 
   // 初始化传感器
   if (!aht20.begin())
     Serial.println("AHT20 not found!");
   if (!bmp280.begin())
     Serial.println("BMP280 not found!");
-  if (!bh1750.begin())
-    Serial.println("BH1750 not found!");
+  if (!bh1750.begin(Wire))
+    Serial.println("BH1750 not found!"); // 传入Wire实例
 
   // 初始化OLED
   oled.begin();
   oled.showData(0, 0, 0, 0); // 初始显示
+
+  Serial.println("All sensors initialized");
+  //********************************************* */
+  // 检测当前已连接设备的I2C地址
+  Serial.println("Scanning I2C bus...");
+  byte error, address;
+  int nDevices = 0;
+  for (address = 1; address < 127; address++)
+  {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    if (error == 0)
+    {
+      Serial.printf("I2C device found at address 0x%02X\n", address);
+      nDevices++;
+    }
+  }
+  if (nDevices == 0)
+    Serial.println("No I2C devices found");
+  /************************************************* */
 }
 
 void loop()
