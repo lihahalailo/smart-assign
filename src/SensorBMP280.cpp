@@ -1,4 +1,5 @@
 #include "SensorBMP280.h"
+#include <Adafruit_BMP280.h>
 
 bool PressureSensor::begin()
 {
@@ -7,5 +8,5 @@ bool PressureSensor::begin()
 
 float PressureSensor::readPressure()
 {
-    return bmp.readPressure() / 100.0; // Convert to hPa
+    return bmp.readPressure() / 100.0; // ×ª»»Îª hPa
 }

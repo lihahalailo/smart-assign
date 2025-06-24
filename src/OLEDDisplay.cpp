@@ -1,5 +1,6 @@
 #include "OLEDDisplay.h"
 #include <Wire.h>
+#include <U8g2lib.h>
 
 OLEDDisplay::OLEDDisplay(uint8_t sda_pin, uint8_t scl_pin)
     : sda(sda_pin), scl(scl_pin)

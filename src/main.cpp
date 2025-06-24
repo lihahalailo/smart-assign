@@ -36,7 +36,7 @@ void setup()
     Serial.println("AHT20 not found!");
   if (!bmp280.begin())
     Serial.println("BMP280 not found!");
-  if (!bh1750.begin(Wire))
+  if (!bh1750.begin())
     Serial.println("BH1750 not found!"); // 传入Wire实例
 
   // 初始化OLED

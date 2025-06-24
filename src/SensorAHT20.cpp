@@ -1,4 +1,5 @@
 #include "SensorAHT20.h"
+#include <Adafruit_AHTX0.h>
 
 bool TempHumiditySensor::begin()
 {
