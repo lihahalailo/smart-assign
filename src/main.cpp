@@ -12,9 +12,18 @@
 #define SENSOR_SDA 21
 #define SENSOR_SCL 22
 
+#define LED_PIN 2
+bool ledState = false;
+unsigned long lastBlinkTime = 0;
+const int BLINK_INTERVAL = 500; // 闪烁间隔(ms)
+
 // OLED I2C配置
-#define OLED_SDA 16
-#define OLED_SCL 17
+#define OLED_SDA 18
+#define OLED_SCL 19
+
+// 创建两个I2C实例
+//TwoWire I2CSensors = TwoWire(0); // I2C0
+//TwoWire I2COLED = TwoWire(1);    // I2C1
 
 // WiFi配置
 const char *WIFI_SSID = "lhh";
@@ -46,9 +55,17 @@ void setup()
 {
   Serial.begin(115200);
 
+  // 初始化传感器I2C总线
+  Wire.begin(OLED_SDA, OLED_SCL);
+
   // 初始化OLED
   oled.begin();
   oled.showConnectionInfo("Starting...", "0.0.0.0");
+
+  // 初始化LED引脚
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // 初始状态关闭
+
 
   // 初始化传感器I2C总线
   Wire.begin(SENSOR_SDA, SENSOR_SCL);
@@ -85,6 +102,12 @@ void setup()
     Serial.print("IP Address: ");
     Serial.println(wifiManager.getLocalIP());
 
+    for (int i = 0; i < 6; i++)
+    { // 6次变化 = 3次闪烁
+      digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+      delay(200);
+    }
+
     // 初始化时间服务
     timeManager.begin();
 
@@ -112,6 +135,20 @@ void loop()
   aht20.readData(temp, humidity);
   pressure = bmp280.readPressure();
   light = bh1750.readLightLevel();
+
+  if (wifiManager.isConnected())
+  {
+    if (millis() - lastBlinkTime > BLINK_INTERVAL)
+    {
+      ledState = !ledState;
+      digitalWrite(LED_PIN, ledState);
+      lastBlinkTime = millis();
+    }
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW); // WiFi断开时关闭LED
+  }
 
   // 更新网络时间
   timeManager.update();
